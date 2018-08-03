@@ -106,4 +106,68 @@ public class GUIManager
         pair.Key.SetActive(false);
         pair.Value.Hide();
     }
+
+    public static IView FindView(GameObject gameObject)
+    {
+        GameObject panel = GetRootPanel(gameObject);
+        if (panel == null) return null;
+
+        KeyValuePair<GameObject, IView> pair;
+        if (!m_UIViewDic.TryGetValue(panel.name, out pair))
+        {
+            return null;
+        }
+        return pair.Value;
+    }
+
+    public static T FindView<T>(string name) where T : IView
+    {
+        KeyValuePair<GameObject, IView> pair;
+        if (m_UIViewDic.TryGetValue(name, out pair))
+        {
+            return pair.Value as T;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 获取父级最高层次Panel;
+    /// </summary>
+    /// <param name="gameobject"></param>
+    /// <returns></returns>
+    private static GameObject GetRootPanel(GameObject gameObject)
+    {
+        if (gameObject == null) return null;
+
+        Transform parent = gameObject.transform.parent;
+        if (parent == null)
+        {
+            // 这个go没有父物体
+            UIPanel panel = gameObject.GetComponent<UIPanel>();
+            return panel == null ? null : panel.gameObject;
+        }
+
+        // 找到最高级的panel
+        UIPanel parentPanel = null;
+        while (parent != null)
+        {
+            UIPanel panel = parent.GetComponent<UIPanel>();
+            if (panel != null)
+            {
+                parentPanel = panel;
+            }
+            parent = parent.transform.parent;
+        }
+
+        return parentPanel == null ? null : parentPanel.gameObject;
+    }
+
+    public static void Update()
+    {
+        foreach (KeyValuePair<GameObject, IView> item in m_UIViewDic.Values)
+        {
+            if (item.Key.activeInHierarchy)
+                item.Value.Update();
+        }
+    }
 }

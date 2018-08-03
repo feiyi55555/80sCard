@@ -5,6 +5,7 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -1765,15 +1766,57 @@ public class UICamera : MonoBehaviour
 			go.SendMessage(funcName, obj, SendMessageOptions.DontRequireReceiver);
 			if (mGenericHandler != null && mGenericHandler != go)
 				mGenericHandler.SendMessage(funcName, obj, SendMessageOptions.DontRequireReceiver);
-			--mNotifying;
+
+            CustomMsgDisPatcher(go, funcName, obj);
+
+            --mNotifying;
 		}
 	}
 
-	/// <summary>
-	/// Add this camera to the list.
-	/// </summary>
+    /// <summary>
+    /// 自定义的玩家操作事件分发器
+    /// </summary>
+    /// <param name="go"></param>
+    /// <param name="funcName"></param>
+    /// <param name="obj"></param>
+    private static void CustomMsgDisPatcher(GameObject go, string funcName, object obj)
+    {
+        IView view = GUIManager.FindView(go);
+        if (view != null)
+        {
+            if (funcName.Equals("OnClick"))
+            {
+                Debug.LogError("----");
+                view.Click(go, obj);
+            }
+            else if (funcName.Equals("OnPress"))
+            {
+                view.Press(go, obj);
+            }
+            else if (funcName.Equals("OnDrag"))
+            {
+                view.Drag(go, obj);
+            }
+            else if (funcName.Equals("OnTooltip"))
+            {
+                //view.Tooltip(go, obj);
+            }
+            else if (funcName.Equals("OnDrop"))
+            {
+                //view.Drop(go, obj);
+            }
+            else if (funcName.Equals("OnKey"))
+            {
+                // view.PressKey((KeyCode)obj);
+            }
+        }
+    }
 
-	void Awake ()
+    /// <summary>
+    /// Add this camera to the list.
+    /// </summary>
+
+    void Awake ()
 	{
 		mWidth = Screen.width;
 		mHeight = Screen.height;
