@@ -11,6 +11,10 @@ public class LoginPanel : IView
 
     public override void OnClick(GameObject sender, object param)
     {
+        if (sender.gameObject.name.Equals("LoginBtn"))
+        {
+            GameStateManager.LoadScene(2);
+        }
     }
 
     public override void OnDestory()

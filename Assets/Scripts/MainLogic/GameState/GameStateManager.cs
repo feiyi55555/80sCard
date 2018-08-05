@@ -38,7 +38,7 @@ public class GameStateManager : MonoBehaviour {
     /// <summary>
     /// 加载场景，坐在GamestateMgr不合适，或许需要一个SceneMgr
     /// </summary>
-    /// <param name="sceneId"></param>
+    /// <param name="sceneId">场景表ID</param>
     public static void LoadScene(int sceneId)
     {
         SceneData sceneData = DataManager.sceneDataManager.GetData(sceneId);
